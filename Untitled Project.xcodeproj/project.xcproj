@@ -13,7 +13,6 @@
   },
   "files": [
     { "kind": "folder", "path": "MyApp", "target-membership": [ "MyApp" ] },
-    { "path": "activitypage.swift", "target-membership": [ "MyApp/compile-sources" ] },
     {
       "kind": "group",
       "name": "Products",
