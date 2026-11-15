@@ -1,7 +1,7 @@
 import SwiftUI
 
 extension Color {
-    // ينشئ لون من كود Hex مثل "FF9230"
+
     init(hex: String) {
         let cleaned = hex.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
         let value = Scanner(string: cleaned).scanUInt64(representation: .hexadecimal) ?? 0

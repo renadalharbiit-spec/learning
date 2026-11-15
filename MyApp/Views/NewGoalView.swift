@@ -23,22 +23,7 @@ struct NewGoalView: View {
 
             VStack(alignment: .leading, spacing: 12) {
                 Text("I want to learn it in a")
-                HStack(spacing: 10) {
-                    ForEach(GoalDuration.allCases, id: \.self) { option in
-                        Button {
-                            viewModel.duration = option
-                        } label: {
-                            Text(option.rawValue)
-                                .padding(.horizontal, 18)
-                                .padding(.vertical, 8)
-                                .foregroundStyle(viewModel.duration == option ? Color.white : Color.gray)
-                                .background(
-                                    viewModel.duration == option ? Color.appOrange : Color.appCard,
-                                    in: Capsule()
-                                )
-                        }
-                    }
-                }
+                DurationPicker(selection: $viewModel.duration)
             }
 
             Spacer()

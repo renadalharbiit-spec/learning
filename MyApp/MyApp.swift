@@ -2,22 +2,26 @@ import SwiftUI
 
 @main
 struct MyApp: App {
-    @StateObject private var activityVM = ActivityViewModel()   // الـ ViewModel الوحيد للتطبيق
-    @State private var hasStarted = false                       // هل خلّصت الـ Onboarding؟
+    @StateObject private var activityVM = ActivityViewModel()
+    @State private var hasStarted = false
+    private let showDemoData = true
 
     var body: some Scene {
         WindowGroup {
-            Group {                                             // ← جديد: يجمع الشاشتين بحاوية وحدة
+            Group {
                 if hasStarted {
                     ActivityView(viewModel: activityVM)
                 } else {
                     OnboardingView { goal in
                         activityVM.updateGoal(goal)
+                        if showDemoData {
+                            activityVM.loadDemoData()
+                        }
                         hasStarted = true
                     }
                 }
             }
-            .preferredColorScheme(.dark)                        // ← جديد: الدارك مود لكل التطبيق من هنا
+            .preferredColorScheme(.dark)
         }
     }
 }

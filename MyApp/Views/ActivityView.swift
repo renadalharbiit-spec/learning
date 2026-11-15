@@ -34,7 +34,7 @@ struct ActivityView: View {
         }
     }
 
-    // الهيدر
+     
     private var header: some View {
         HStack {
             VStack(alignment: .leading, spacing: 4) {
@@ -61,7 +61,6 @@ struct ActivityView: View {
         }
     }
 
-    // MARK: - شريط الأسبوع
     private var weekStrip: some View {
         HStack {
             ForEach(Array(viewModel.weekDays.enumerated()), id: \.offset) { index, date in
@@ -107,7 +106,6 @@ struct ActivityView: View {
         }
     }
 
-    // MARK: - البطاقتان
     private var statsCards: some View {
         HStack(spacing: 12) {
             statCard(icon: "fire", text: viewModel.streakText, subtitle: "Learned")
@@ -133,7 +131,6 @@ struct ActivityView: View {
         .ringBackground(Color.appCard, in: RoundedRectangle(cornerRadius: 30))
     }
 
-    // MARK: - زر Log as Learned
     private var logButton: some View {
         Button {
             viewModel.logLearned()
@@ -147,7 +144,6 @@ struct ActivityView: View {
         .disabled(!viewModel.canLearn)
     }
 
-    // MARK: - زر Freeze
     private var freezeButton: some View {
         Button {
             viewModel.freezeDay()

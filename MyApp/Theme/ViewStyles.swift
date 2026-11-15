@@ -1,9 +1,4 @@
-//
-//  Theme.swift
-//  MyApp
-//
-//  Created by Renad Sameer Alharbi on 02/06/1448 AH.
-//
+
 
 import SwiftUI
 

@@ -1,9 +1,4 @@
-//
-//  LearningGoalViewModel.swift
-//  MyApp
-//
-//  Created by Renad Sameer Alharbi on 30/05/1448 AH.
-//
+
 
 import SwiftUI
 import Combine
