@@ -5,26 +5,46 @@ struct ActivityView: View {
     @State private var showGoalEditor = false
     @State private var showCalendar = false
     private let weekLetters = ["S", "M", "T", "W", "T", "F", "S"]
-    private let circleSize: CGFloat = 270
 
-    
+    private let circleSize: CGFloat = 272
+    private let freezeHeight: CGFloat = 46
+    private let dayCircleSize: CGFloat = 44
+    private let headerButtonSize: CGFloat = 44
+    private let cardRadius: CGFloat = 28
+
     var body: some View {
-        VStack(spacing: 25) {
+        VStack(spacing: 0) {
             header
+                .padding(.top, 8)
+                .padding(.bottom, 20)
             weekStrip
+                .padding(.bottom, 12)
             statsCards
-            Spacer()
-            logButton
-            Spacer()
-            freezeButton
-            Text(viewModel.selectedDayMessage ?? viewModel.freezesUsedText)
-                .font(.callout)
-                .foregroundStyle(.gray)
+
+            if viewModel.isGoalEnded {
+                Spacer()
+                goalStateView(
+                    icon: viewModel.isGoalSuccessful ? "clap" : "x",
+                    title: viewModel.isGoalSuccessful ? "Well done!" : "You didn't reach your goal this time.",
+                    subtitle: viewModel.isGoalSuccessful ? "Ready for your next goal?" : "Want to set another goal?",
+                    buttonIcon: viewModel.isGoalSuccessful ? "checkmark.circle.fill" : "arrow.clockwise"
+                )
+                Spacer()
+            } else {
+                Spacer()
+                logButton
+                Spacer()
+                freezeButton
+                    .padding(.bottom, 18)
+                Text(viewModel.selectedDayMessage ?? viewModel.freezesUsedText)
+                    .font(.subheadline)
+                    .foregroundStyle(.gray)
+            }
         }
         .padding(.horizontal)
-        .padding(.bottom, 16)
+        .padding(.bottom, 40)
         .onAppear { viewModel.checkStreakReset() }
-        .fullScreenCover(isPresented: $showGoalEditor) {      // ← تغيّر: كانت sheet
+        .fullScreenCover(isPresented: $showGoalEditor) {
             NewGoalView(currentGoal: viewModel.goal) { newGoal in
                 viewModel.updateGoal(newGoal)
             }
@@ -34,19 +54,20 @@ struct ActivityView: View {
         }
     }
 
-     
     private var header: some View {
         HStack {
             VStack(alignment: .leading, spacing: 4) {
                 Text("Activity")
                     .font(.largeTitle.bold())
                 Text(viewModel.todayText)
-                    .font(.callout)
+                    .font(.body)
                     .foregroundStyle(.gray)
             }
             Spacer()
-            headerButton("calendar") { showCalendar = true }
-            headerButton("pencil.circle") { showGoalEditor = true }
+            HStack(spacing: 12) {
+                headerButton("calendar") { showCalendar = true }
+                headerButton("pencil.and.outline") { showGoalEditor = true }
+            }
         }
         .foregroundStyle(.white)
     }
@@ -54,27 +75,27 @@ struct ActivityView: View {
     private func headerButton(_ icon: String, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             Image(systemName: icon)
-                .font(.system(size: 20))
+                .font(.system(size: 22))
                 .foregroundStyle(.white)
-                .frame(width: 48, height: 48)
-                .ringBackground(Color.appCard, in: Circle())
+                .frame(width: headerButtonSize, height: headerButtonSize)
+                .appGlass(in: Circle())
         }
     }
 
     private var weekStrip: some View {
-        HStack {
+        HStack(spacing: 0) {
             ForEach(Array(viewModel.weekDays.enumerated()), id: \.offset) { index, date in
                 Button {
                     viewModel.select(date)
                 } label: {
-                    VStack(spacing: 10) {
+                    VStack(spacing: 6) {
                         Text(weekLetters[index])
                             .font(.system(size: 13, weight: .semibold))
-                            .foregroundStyle(Color.white.opacity(0.8))
+                            .foregroundStyle(.white)
                         Text(viewModel.dayNumber(date))
-                            .font(.system(size: 20, weight: .semibold))
+                            .font(.system(size: 22, weight: .medium))
                             .foregroundStyle(numberColor(for: date))
-                            .frame(width: 46, height: 46)
+                            .frame(width: dayCircleSize, height: dayCircleSize)
                             .background(circleColor(for: date), in: Circle())
                             .overlay(
                                 Circle().stroke(
@@ -122,13 +143,13 @@ struct ActivityView: View {
             Text(text)
                 .font(.headline)
             Text(subtitle)
-                .font(.caption)
+                .font(.system(size: 13))
                 .foregroundStyle(.gray)
         }
         .foregroundStyle(.white)
         .frame(maxWidth: .infinity)
-        .padding(.vertical, 18)
-        .ringBackground(Color.appCard, in: RoundedRectangle(cornerRadius: 30))
+        .padding(.vertical, 14)
+        .appGlass(in: RoundedRectangle(cornerRadius: cardRadius), interactive: false)
     }
 
     private var logButton: some View {
@@ -136,10 +157,14 @@ struct ActivityView: View {
             viewModel.logLearned()
         } label: {
             Text(viewModel.canLearn ? "Log as Learned" : "Logged as Learned")
-                .font(.title2.bold())
+                .font(.system(size: 18, weight: .bold))
                 .foregroundStyle(viewModel.canLearn ? Color.white : Color.gray)
                 .frame(width: circleSize, height: circleSize)
-                .background(viewModel.canLearn ? Color.appOrange : Color.appCard, in: Circle())
+                .appGlass(
+                    in: Circle(),
+                    tint: viewModel.canLearn ? Color.appOrange : nil,
+                    interactive: viewModel.canLearn
+                )
         }
         .disabled(!viewModel.canLearn)
     }
@@ -149,12 +174,49 @@ struct ActivityView: View {
             viewModel.freezeDay()
         } label: {
             Text(viewModel.canFreeze ? "Freeze for a day" : "Freezed for a day")
-                .font(.headline)
+                .font(.system(size: 17, weight: .medium))
                 .foregroundStyle(viewModel.canFreeze ? Color.white : Color.gray)
-                .frame(width: circleSize, height: 56)
-                .ringBackground(viewModel.canFreeze ? Color.appBlue : Color.appDisabled, in: Capsule())
+                .frame(width: circleSize, height: freezeHeight)
+                .appGlass(
+                    in: Capsule(),
+                    tint: viewModel.canFreeze ? Color.appBlue : nil,
+                    interactive: viewModel.canFreeze
+                )
         }
         .disabled(!viewModel.canFreeze)
+    }
+
+    private func goalStateView(icon: String, title: String, subtitle: String, buttonIcon: String) -> some View {
+        VStack(spacing: 20) {
+            Image(icon)
+                .resizable()
+                .scaledToFit()
+                .frame(width: 52, height: 52)
+
+            VStack(spacing: 6) {
+                Text(title)
+                    .font(.title2.bold())
+                    .foregroundStyle(.white)
+                Text(subtitle)
+                    .font(.subheadline)
+                    .foregroundStyle(.gray)
+            }
+
+            Button {
+                showGoalEditor = true
+            } label: {
+                HStack(spacing: 8) {
+                    Image(systemName: buttonIcon)
+                    Text("Set a goal")
+                }
+                .font(.headline)
+                .foregroundStyle(.white)
+                .padding(.horizontal, 36)
+                .padding(.vertical, 14)
+                .appGlass(in: Capsule(), tint: Color.appOrange)
+            }
+        }
+        .frame(maxWidth: .infinity)
     }
 }
 

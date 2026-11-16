@@ -19,7 +19,7 @@ struct CalendarView: View {
             }
             .padding(.horizontal, 8)
 
-            legend
+            
 
             Spacer()
         }
@@ -44,27 +44,11 @@ struct CalendarView: View {
         }
     }
 
-    private var legend: some View {
-        HStack(spacing: 20) {
-            legendItem(color: .appOrange, text: "Learned")
-            legendItem(color: .appBlue, text: "Freezed")
-        }
-        .padding(.top, 16)
+   
     }
 
-    private func legendItem(color: Color, text: String) -> some View {
-        HStack(spacing: 6) {
-            Circle()
-                .fill(color)
-                .frame(width: 8, height: 8)
-            Text(text)
-                .font(.footnote)
-                .foregroundStyle(.gray)
-        }
-    }
-}
 
-// MARK: - بيانات تجريبية للـ Preview فقط
+//  - بيانات تجريبية  Preview فقط
 private func makeSampleLogs() -> [DayLog] {
     let calendar = Calendar(identifier: .gregorian)
     var logs: [DayLog] = []

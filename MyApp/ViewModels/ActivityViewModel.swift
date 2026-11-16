@@ -3,21 +3,20 @@ import Combine
 
 class ActivityViewModel: ObservableObject {
 
-
     @Published var goal: LearningGoal
     @Published var streakDays = 0
     @Published var freezedDays = 0
     @Published var logs: [DayLog] = []
     @Published var selectedDate = Date()
+    
     private var lastActivityDate: Date?
     private let streakResetHours: Double = 32
     private let calendar: Calendar = {
         var c = Calendar(identifier: .gregorian)
-        c.firstWeekday = 1                        
+        c.firstWeekday = 1 // الأسبوع يبدأ من الأحد، والسبت هو اليوم الأخير
         return c
     }()
 
-    
     init(goal: LearningGoal = LearningGoal(topic: "Swift", duration: .week)) {
         self.goal = goal
     }
@@ -37,14 +36,25 @@ class ActivityViewModel: ObservableObject {
     var hasLearnedOnSelectedDay: Bool { hasLog(.learned, on: selectedDate) }
     var hasFreezedOnSelectedDay: Bool { hasLog(.freezed, on: selectedDate) }
 
+    // ← تغيّر: شلنا !hasFreezedOnSelectedDay، فالـ Freeze ما عاد يعطّل زر Learned
     var canLearn: Bool {
-        !hasLearnedOnSelectedDay
+        !hasLearnedOnSelectedDay && !isGoalEnded
     }
 
+    // ← تغيّر: شلنا !hasLearnedOnSelectedDay، فالـ Learned ما عاد يعطّل زر Freeze
     var canFreeze: Bool {
-        !hasFreezedOnSelectedDay && freezedDays < goal.duration.maxFreezes
+        !hasFreezedOnSelectedDay && freezedDays < goal.duration.maxFreezes && !isGoalEnded
     }
 
+    var isGoalEnded: Bool {
+        guard let week = calendar.dateInterval(of: .weekOfYear, for: selectedDate) else { return false }
+        let lastDayOfWeek = calendar.date(byAdding: .day, value: 6, to: week.start) ?? Date()
+        return calendar.isDate(selectedDate, inSameDayAs: lastDayOfWeek)
+    }
+
+    var isGoalSuccessful: Bool {
+        streakDays > 0
+    }
 
     var todayText: String {
         let formatter = DateFormatter()
@@ -102,14 +112,13 @@ class ActivityViewModel: ObservableObject {
         addLog(.freezed, on: selectedDate)
     }
 
-
     func updateGoal(_ newGoal: LearningGoal) {
         goal = newGoal
         streakDays = 0
         freezedDays = 0
         logs = []
-        lastActivityDate = nil     //
-        selectedDate = Date()      //
+        lastActivityDate = nil
+        selectedDate = Date()
     }
 
     func checkStreakReset() {
@@ -130,27 +139,5 @@ class ActivityViewModel: ObservableObject {
         logs.contains { log in
             log.status == status && calendar.isDate(log.date, inSameDayAs: date)
         }
-    }
-    
-    func loadDemoData() {
-        guard
-            let thisMonth = calendar.dateInterval(of: .month, for: Date())?.start,
-            let startDate = calendar.date(byAdding: .month, value: -2, to: thisMonth),
-            let totalDays = calendar.dateComponents([.day], from: startDate, to: Date()).day
-        else { return }
-
-        var demoLogs: [DayLog] = []
-
-        for daysAgo in 1...totalDays {
-            guard let date = calendar.date(byAdding: .day, value: -daysAgo, to: Date()) else { continue }
-
-            if daysAgo % 13 == 5 {
-                demoLogs.append(DayLog(date: date, status: .freezed))
-            } else if daysAgo % 17 != 9 {
-                demoLogs.append(DayLog(date: date, status: .learned))
-            }
-        }
-
-        logs = demoLogs
     }
 }
