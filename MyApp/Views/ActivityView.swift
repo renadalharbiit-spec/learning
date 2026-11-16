@@ -50,7 +50,7 @@ struct ActivityView: View {
             }
         }
         .fullScreenCover(isPresented: $showCalendar) {
-            CalendarView(logs: viewModel.logs)
+            CalendarView(goal: viewModel.goal, logs: viewModel.logs)   // ← تغيّر: أضفنا goal
         }
     }
 

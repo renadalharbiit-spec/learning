@@ -25,5 +25,6 @@ enum GoalDuration: String, CaseIterable {
 struct LearningGoal {
     var topic: String
     var duration: GoalDuration
+    var startDate: Date = Date()
 }
 
