@@ -6,8 +6,7 @@ Learning Journey is an iOS app designed to help learners build a consistent dail
 
 ## 📱 App Showcase
 
-![Learning Journey App Showcase](app-showcase.png)
-
+![App Showcase](showcase.png)
 ## ✨ Features
 
 - 🎯 **Set Goals** — Define what you want to learn.
