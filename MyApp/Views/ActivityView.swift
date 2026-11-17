@@ -27,7 +27,7 @@ struct ActivityView: View {
                     icon: viewModel.isGoalSuccessful ? "clap" : "x",
                     title: viewModel.isGoalSuccessful ? "Well done!" : "You didn't reach your goal this time.",
                     subtitle: viewModel.isGoalSuccessful ? "Ready for your next goal?" : "Want to set another goal?",
-                    buttonIcon: viewModel.isGoalSuccessful ? "checkmark.circle.fill" : "arrow.clockwise"
+                    buttonIcon: "pencil.and.outline"
                 )
                 Spacer()
             } else {
@@ -50,7 +50,7 @@ struct ActivityView: View {
             }
         }
         .fullScreenCover(isPresented: $showCalendar) {
-            CalendarView(goal: viewModel.goal, logs: viewModel.logs)   // ← تغيّر: أضفنا goal
+            CalendarView(goal: viewModel.goal, logs: viewModel.logs)
         }
     }
 
@@ -97,12 +97,6 @@ struct ActivityView: View {
                             .foregroundStyle(numberColor(for: date))
                             .frame(width: dayCircleSize, height: dayCircleSize)
                             .background(circleColor(for: date), in: Circle())
-                            .overlay(
-                                Circle().stroke(
-                                    Color.white,
-                                    lineWidth: viewModel.isSelected(date) && !viewModel.isToday(date) ? 2 : 0
-                                )
-                            )
                     }
                     .frame(maxWidth: .infinity)
                 }

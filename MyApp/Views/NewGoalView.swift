@@ -47,8 +47,10 @@ struct NewGoalView: View {
                 dismiss()
             } label: {
                 Image(systemName: "chevron.left")
-                    .padding(12)
-                    .ringBackground(Color.appCard, in: Circle())
+                    .font(.system(size: 18, weight: .semibold))
+                    .foregroundStyle(.white)
+                    .frame(width: 44, height: 44)
+                    .appGlass(in: Circle())
             }
 
             Spacer()
@@ -57,10 +59,13 @@ struct NewGoalView: View {
                 showAlert = true
             } label: {
                 Image(systemName: "checkmark")
-                    .padding(12)
-                    .background(
-                        viewModel.isValid ? Color.appOrange : Color.appOrange.opacity(0.3),
-                        in: Circle()
+                    .font(.system(size: 18, weight: .semibold))
+                    .foregroundStyle(viewModel.isValid ? Color.white : Color.gray)
+                    .frame(width: 44, height: 44)
+                    .appGlass(
+                        in: Circle(),
+                        tint: viewModel.isValid ? Color.appOrange : nil,
+                        interactive: viewModel.isValid
                     )
             }
             .disabled(!viewModel.isValid)

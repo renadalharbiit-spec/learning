@@ -10,7 +10,7 @@ struct CalendarViewModel {
         return c
     }()
 
-    private let minimumMonths = 12     // ← جديد: أقل عدد أشهر نعرضه
+    private let minimumMonths = 12
 
     let weekdayHeaders = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"]
 
@@ -19,7 +19,6 @@ struct CalendarViewModel {
         self.logs = logs
     }
 
-    // أول يوم في كل شهر، من شهر بداية الهدف
     var months: [Date] {
         let start = calendar.startOfDay(for: goal.startDate)
         guard
@@ -28,16 +27,12 @@ struct CalendarViewModel {
             let lastGoalMonth = calendar.dateInterval(of: .month, for: goalEnd)?.start
         else { return [] }
 
-        // كم شهر بين أول شهر وآخر شهر في الهدف
         let goalMonths = calendar.dateComponents([.month], from: firstMonth, to: lastGoalMonth).month ?? 0
-
-        // نعرض 12 شهر على الأقل، وإذا الهدف أطول نعرض كل أشهره
         let count = max(minimumMonths, goalMonths + 1)
 
         return (0..<count).compactMap { calendar.date(byAdding: .month, value: $0, to: firstMonth) }
     }
 
-    // عنوان الشهر، مثل "November 2026"
     func title(for month: Date) -> String {
         let formatter = DateFormatter()
         formatter.calendar = calendar
@@ -46,7 +41,6 @@ struct CalendarViewModel {
         return formatter.string(from: month)
     }
 
-    // خلايا الشهر: nil = خلية فاضية قبل اليوم الأول
     func cells(for month: Date) -> [Date?] {
         guard let range = calendar.range(of: .day, in: .month, for: month) else { return [] }
         let weekday = calendar.component(.weekday, from: month)
@@ -63,7 +57,6 @@ struct CalendarViewModel {
         String(calendar.component(.day, from: date))
     }
 
-    // حالة اليوم: Learned أو Freezed أو لا شيء
     func status(on date: Date) -> DayStatus? {
         logs.last { calendar.isDate($0.date, inSameDayAs: date) }?.status
     }

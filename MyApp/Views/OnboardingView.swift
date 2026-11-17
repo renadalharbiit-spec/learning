@@ -4,12 +4,12 @@ struct OnboardingView: View {
     @StateObject private var viewModel = LearningGoalViewModel()
     var onStart: (LearningGoal) -> Void
 
-    // MARK: - مقاسات التصميم
+   
     private let sideMargin: CGFloat = 16
     private let flameSize: CGFloat = 40
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {       // ← المسافات نحددها لكل جزء بنفسنا
+        VStack(alignment: .leading, spacing: 0) {
             flame
                 .padding(.top, 56)
             titleBlock
@@ -21,13 +21,13 @@ struct OnboardingView: View {
 
             Spacer()
 
-            startButton                                  // ← بدون padding تحت
+            startButton
         }
         .padding(.horizontal, sideMargin)
         .foregroundStyle(.white)
     }
 
-    // MARK: - الشعلة
+    
     private var flame: some View {
         Image("fire")
             .resizable()
@@ -36,7 +36,7 @@ struct OnboardingView: View {
             .frame(maxWidth: .infinity)
     }
 
-    // MARK: - العنوان والوصف
+    
     private var titleBlock: some View {
         VStack(alignment: .leading, spacing: 0) {
             (Text("Hello ").fontWeight(.regular) + Text("Learner").fontWeight(.bold))
@@ -47,7 +47,7 @@ struct OnboardingView: View {
         }
     }
 
-    // MARK: - حقل الموضوع
+   
     private var goalField: some View {
         VStack(alignment: .leading, spacing: 16) {
             Text("I want to learn")
@@ -60,8 +60,7 @@ struct OnboardingView: View {
             }
         }
     }
-
-    // MARK: - المدة
+    
     private var durationSection: some View {
         VStack(alignment: .leading, spacing: 11) {
             Text("I want to learn it in a")
@@ -70,7 +69,7 @@ struct OnboardingView: View {
         }
     }
 
-    // MARK: - زر البداية
+   
     private var startButton: some View {
         VStack(spacing: 10) {
             Button {
@@ -79,8 +78,8 @@ struct OnboardingView: View {
                 Text("Start Learning")
                     .font(.system(size: 18, weight: .semibold))
                     .foregroundStyle(.white)
-                    .padding(.horizontal, 21)
-                    .padding(.vertical, 12)
+                    .padding(.horizontal, 28)
+                    .padding(.vertical, 14)
                     .appGlass(
                         in: Capsule(),
                         tint: viewModel.isValid ? Color.appOrange : Color.appOrange.opacity(0.35),

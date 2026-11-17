@@ -25,7 +25,7 @@ struct CalendarView: View {
         }
     }
 
-    // MARK: - الشريط العلوي
+
     private var topBar: some View {
         HStack {
             Button {
@@ -45,7 +45,7 @@ struct CalendarView: View {
         }
     }
 
-    // MARK: - الشهر
+    
     private func monthSection(_ month: Date, showDivider: Bool) -> some View {
         VStack(alignment: .leading, spacing: 0) {
             if showDivider {
@@ -76,8 +76,8 @@ struct CalendarView: View {
             .padding(.bottom, 12)
         }
     }
+    
 
-    // MARK: - خلية اليوم
     @ViewBuilder
     private func dayCell(_ date: Date?) -> some View {
         if let date = date {

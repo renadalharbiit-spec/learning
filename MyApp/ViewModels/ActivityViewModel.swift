@@ -8,12 +8,13 @@ class ActivityViewModel: ObservableObject {
     @Published var freezedDays = 0
     @Published var logs: [DayLog] = []
     @Published var selectedDate = Date()
+    @Published var isGoalEnded = false
     
     private var lastActivityDate: Date?
     private let streakResetHours: Double = 32
     private let calendar: Calendar = {
         var c = Calendar(identifier: .gregorian)
-        c.firstWeekday = 1 // الأسبوع يبدأ من الأحد، والسبت هو اليوم الأخير
+        c.firstWeekday = 1
         return c
     }()
 
@@ -36,20 +37,12 @@ class ActivityViewModel: ObservableObject {
     var hasLearnedOnSelectedDay: Bool { hasLog(.learned, on: selectedDate) }
     var hasFreezedOnSelectedDay: Bool { hasLog(.freezed, on: selectedDate) }
 
-    // ← تغيّر: شلنا !hasFreezedOnSelectedDay، فالـ Freeze ما عاد يعطّل زر Learned
     var canLearn: Bool {
         !hasLearnedOnSelectedDay && !isGoalEnded
     }
 
-    // ← تغيّر: شلنا !hasLearnedOnSelectedDay، فالـ Learned ما عاد يعطّل زر Freeze
     var canFreeze: Bool {
         !hasFreezedOnSelectedDay && freezedDays < goal.duration.maxFreezes && !isGoalEnded
-    }
-
-    var isGoalEnded: Bool {
-        guard let week = calendar.dateInterval(of: .weekOfYear, for: selectedDate) else { return false }
-        let lastDayOfWeek = calendar.date(byAdding: .day, value: 6, to: week.start) ?? Date()
-        return calendar.isDate(selectedDate, inSameDayAs: lastDayOfWeek)
     }
 
     var isGoalSuccessful: Bool {
@@ -67,6 +60,12 @@ class ActivityViewModel: ObservableObject {
     var weekDays: [Date] {
         guard let week = calendar.dateInterval(of: .weekOfYear, for: Date()) else { return [] }
         return (0..<7).compactMap { calendar.date(byAdding: .day, value: $0, to: week.start) }
+    }
+
+    private var isLastDayOfWeek: Bool {
+        guard let week = calendar.dateInterval(of: .weekOfYear, for: selectedDate) else { return false }
+        let lastDayOfWeek = calendar.date(byAdding: .day, value: 6, to: week.start) ?? Date()
+        return calendar.isDate(selectedDate, inSameDayAs: lastDayOfWeek)
     }
 
     func dayNumber(_ date: Date) -> String {
@@ -103,6 +102,10 @@ class ActivityViewModel: ObservableObject {
         guard canLearn else { return }
         streakDays += 1
         addLog(.learned, on: selectedDate)
+        
+        if isLastDayOfWeek {
+            isGoalEnded = true
+        }
     }
 
     func freezeDay() {
@@ -110,6 +113,10 @@ class ActivityViewModel: ObservableObject {
         guard canFreeze else { return }
         freezedDays += 1
         addLog(.freezed, on: selectedDate)
+        
+        if isLastDayOfWeek {
+            isGoalEnded = true
+        }
     }
 
     func updateGoal(_ newGoal: LearningGoal) {
@@ -119,6 +126,7 @@ class ActivityViewModel: ObservableObject {
         logs = []
         lastActivityDate = nil
         selectedDate = Date()
+        isGoalEnded = false
     }
 
     func checkStreakReset() {
